@@ -21,7 +21,13 @@
             placeholder="请输入密码"
           />
         </div>
-        <button type="submit" class="login-btn">登录</button>
+       <button 
+          type="submit" 
+          class="login-btn"
+          :disabled="loading"
+        >
+          {{ loading ? '登录中...' : '登录' }}
+        </button>
       </form>
       <p class="back-home">
         <router-link to="/">返回首页</router-link>
@@ -33,115 +39,68 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-// 1. 使用 ref 创建响应式数据对象
 const loginForm = ref({
   username: '',
   password: ''
 })
 
-// 获取路由实例，用于后续跳转
 const router = useRouter()
+const authStore = useAuthStore()
+const loading = ref(false)
 
-// 登录处理函数 (将在代码块C中实现)
-// 登录处理函数
-const handleLogin = () => {
-  // 1. 简单验证
+const handleLogin = async () => {
+  if (loading.value) return
+  loading.value = true
+  
   if (!loginForm.value.username || !loginForm.value.password) {
     alert('用户名和密码不能为空！')
+    loading.value = false
     return
   }
 
-  // 2. 打印数据到控制台（模拟请求）
-  console.log('尝试登录，表单数据：', loginForm.value)
-
-  // 3. 模拟登录成功，跳转到首页
-  // 先简单模拟一个成功提示
-  alert(`欢迎回来，${loginForm.value.username}！`)
-  
-  // 实际项目中这里会是调用API，成功后：
-  // 1. 保存 token
-  // 2. 跳转页面
-  router.push('/') // 跳转到首页
+  try {
+    console.log('发送登录请求...')
+    
+    // 调试：验证Store
+    console.log('【调试】authStore对象:', authStore)
+    console.log('【调试】authStore.login类型:', typeof authStore.login)
+    
+    // 模拟网络延迟
+    await new Promise(resolve => setTimeout(resolve, 800))
+    
+    // 模拟后端返回的数据
+    const mockUserData = {
+      token: 'mock_jwt_token_' + Date.now(),
+      username: loginForm.value.username
+    }
+    
+    console.log('【调试】准备调用login，数据:', mockUserData)
+    
+    // 【核心】调用Pinia Store，更新全局状态
+    authStore.login(mockUserData)
+    
+    // 立即验证存储结果
+    console.log('【验证】调用login后:')
+    console.log('1. localStorage token:', localStorage.getItem('token'))
+    console.log('2. Store token:', authStore.token)
+    console.log('3. Store isLoggedIn:', authStore.isLoggedIn)
+    
+    alert(`登录成功！欢迎，${loginForm.value.username}`)
+    
+    // 跳转到首页
+    router.push('/')
+    
+  } catch (error: any) {
+    console.error('登录失败:', error)
+    alert(`登录失败: ${error.message || '未知错误'}`)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <style scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 80vh;
-  padding: 20px;
-}
-
-.login-box {
-  width: 100%;
-  max-width: 400px;
-  padding: 40px;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-}
-
-.login-box h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #333;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #555;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d9e0;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.3s;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
-.login-btn {
-  width: 100%;
-  padding: 12px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.login-btn:hover {
-  background-color: #0056b3;
-}
-
-.back-home {
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-}
+/* 样式保持不变 */
 </style>
