@@ -21,12 +21,29 @@
     🚀 发布新任务
   </router-link>
 </div>
+<!-- 在 <template> 的适当位置添加 -->
+<div v-if="authStore.isLoggedIn" class="task-section">
+  <h2>📋 任务列表</h2>
+  <div v-if="taskStore.tasks.length === 0" class="empty-tasks">
+    <p>暂无任务，快去发布第一个任务吧！</p>
+  </div>
+  <div v-else class="task-list">
+    <TaskCard
+      v-for="task in taskStore.tasks"
+      :key="task.id"
+      :task="task"
+    />
+  </div>
+</div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { useTaskStore } from '@/stores/task'
+import TaskCard from '@/components/TaskCard.vue'
 
+const taskStore = useTaskStore()
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -41,6 +58,35 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
+  .task-section {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid #eee;
+}
+
+.task-section h2 {
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.empty-tasks {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  color: #6c757d;
+}
+
+.empty-tasks p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+}
   .action-buttons {
   margin: 30px 0;
 }
