@@ -21,7 +21,14 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('../views/Login.vue')
-    }
+    },
+    // 在routes数组中添加
+{
+  path: '/task/publish',
+  name: 'task-publish',
+  component: () => import('../views/TaskPublish.vue'),
+  meta: { requiresAuth: true } // 需要登录
+}
   ],
 })
 

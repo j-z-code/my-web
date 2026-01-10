@@ -16,6 +16,11 @@
     
     <p>这里是系统的主页，未来会展示任务列表和统计数据。</p>
   </div>
+  <div v-if="authStore.isLoggedIn" class="action-buttons">
+  <router-link to="/task/publish" class="action-btn publish-btn">
+    🚀 发布新任务
+  </router-link>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +41,29 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
+  .action-buttons {
+  margin: 30px 0;
+}
+
+.action-btn {
+  display: inline-block;
+  padding: 14px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.publish-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
 .home {
   padding: 20px;
   max-width: 800px;
